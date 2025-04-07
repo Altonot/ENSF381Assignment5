@@ -5,6 +5,8 @@ import joblib
 app = Flask(__name__)
 CORS(app)
 
+students = [['Student_ID', 'Student_Username', 'Student_Password', 'Email', ['Enrolled_course1', 'Enrolled_course2']]]
+
 app.route('/test', methods=['POST'])
 def test():
     return
