@@ -12,7 +12,7 @@ students = [
                 'Student_Username',
                 'Student_Password',
                 'Email', 
-                ['Enrolled_course1', 'Enrolled_course2']
+                [{'test_id': 1, "test_name": "Web", "test_inst": "Smith", "test_desc": "ipt", "test_dura": "8", "test_image": "images/fake.jpg"}] #enrolled courses
             ]
            ]
 
@@ -30,7 +30,7 @@ def returnRandomTestimonials():
 
 @app.route('/enroll/<student_id>', methods=['POST'])
 def enroll(student_id):
-    courseInfo = request.json()
+    courseInfo = request.get_json()
     enrolled = False
     for i in range(len(students)):
         if students[i][0] == student_id:
@@ -40,29 +40,33 @@ def enroll(student_id):
 
 @app.route('/drop/<student_id>', methods=['DELETE'])
 def drop(student_id):
-    courseInfo = request.json()
+    courseID = request.get_json()
     dropped = False
     for i in range(len(students)):
         if students[i][0] == student_id:
             for j in range(len(students[i][4])):
-                if courseInfo == students[i][4][j]:
+                if courseID == students[i][4][j]['id']:
                     students[i][4].pop(j)
                     dropped = True
     return dropped
 
 @app.route('/courses', methods=['GET'])
 def returnCourses():
-    with open("courses.json", "r") as file:
-        data = json.load(file)
-        courses = data['courses']
-    return courses
+    try:
+        with open("courses.json", "r") as file:
+            data = json.load(file)
+        return json.dumps(data)
+    except:
+        return False
 
 @app.route('/student_courses/<student_id>', methods=['GET'])
 def returnStudentCourses(student_id):
-    for i in range(len(students)):
-        if students[i][0] == student_id:
-            courses = copy.deepcopy(students[i][4])
-    return courses
+    try:
+        for i in range(len(students)):
+            if students[i][0] == student_id:
+                return json.dumps(students[i][4])
+    except:
+        return False
 
 if __name__=='__main__':
     app.run()

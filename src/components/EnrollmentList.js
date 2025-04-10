@@ -26,7 +26,7 @@ const EnrollmentList = ({ enrolledCourses = [], onRemove }) => {
           <div style={{ marginBottom: '20px' }}>
             {enrolledCourses.map(course => (
               <div 
-                key={course.enrollmentId}
+                key={course.id}
                 style={{
                   backgroundColor: 'white',
                   borderRadius: '8px',
@@ -47,7 +47,7 @@ const EnrollmentList = ({ enrolledCourses = [], onRemove }) => {
                 }}>
                   <span style={{ fontSize: '0.9em' }}>{course.duration}</span>
                   <button
-                    onClick={() => onRemove(course.enrollmentId)}
+                    onClick={() => onRemove(course.id)}
                     style={{
                       padding: '5px 10px',
                       backgroundColor: '#dc3545',

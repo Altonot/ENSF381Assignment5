@@ -3,30 +3,61 @@ import Header from './Header';
 import Footer from './Footer';
 import CourseItem from './CourseItem';
 import EnrollmentList from './EnrollmentList';
-import courses from '../data/courses';
 
 const CoursesPage = () => {
-  const [enrolledCourses, setEnrolledCourses] = useState(() => {
-    const saved = localStorage.getItem('enrollments');
-    return saved ? JSON.parse(saved) : [];
-  });
 
-  // Save to localStorage
+  const [courses, setCourses] = useState();
+  const [enrolledCourses, setEnrolledCourses] = useState();
+
   useEffect(() => {
-    localStorage.setItem('enrollments', JSON.stringify(enrolledCourses));
-  }, [enrolledCourses]);
+    fetch('http://127.0.0.1:5000/courses')
+    .then(response => response.json())
+    .then(data => { 
+      if(data){
+        setCourses(data);
+      }
+    })
+    .catch(error => console.error('GET error:', error));
+  }, []);
 
-  const handleEnroll = (course) => {
-    setEnrolledCourses(prev => [...prev, { 
-      ...course,
-      enrollmentId: Date.now() // Unique ID for each enrollment
-    }]);
-  };
+  useEffect(() => {
+    let ID = localStorage.getItem('current_id'); //WIP GET STUDENT ID
+    fetch('http://127.0.0.1:5000/student_courses/${ID}')
+    .then(response => response.json())
+    .then(data => { 
+      if(data) {
+        setEnrolledCourses(data);
+      }
+    })
+    .catch(error => console.error('GET error:', error));
+  }, []);
 
-  const handleRemove = (enrollmentId) => {
-    setEnrolledCourses(prev => 
-      prev.filter(course => course.enrollmentId !== enrollmentId)
-    );
+  function handleEnroll(event, course){
+    event.preventDefault();
+
+    let ID = localStorage.getItem('current_id'); //WIP GET STUDENT ID
+    const postData = course;
+
+    fetch('http://127.0.0.1:5000/enroll/${ID}', {method: 'POST', headers: {'Content-Type': 'application/json',}, body: JSON.stringify(postData), })
+    .then(response => response.json())
+    .then(data => {
+
+    })
+    .catch(error => console.error('POST error:', error));
+}
+
+  function handleRemove(event, courseID) {
+    event.preventDefault();
+
+    let ID = localStorage.getItem('current_id'); //WIP GET STUDENT ID
+    const postData = courseID;
+
+    fetch('http://127.0.0.1:5000/drop/${ID}', {method: 'POST', headers: {'Content-Type': 'application/json',}, body: JSON.stringify(postData), })
+      .then(response => response.json())
+      .then(data => {
+
+    })
+    .catch(error => console.error('POST error:', error));
   };
 
   return (
@@ -54,7 +85,7 @@ const CoursesPage = () => {
               <CourseItem 
                 key={course.id} 
                 course={course} 
-                onEnroll={handleEnroll}
+                onEnroll={(event) => handleEnroll(event, course)}
               />
             ))}
           </div>
@@ -62,7 +93,7 @@ const CoursesPage = () => {
         
         <EnrollmentList 
           enrolledCourses={enrolledCourses}
-          onRemove={handleRemove}
+          onRemove={(event) => handleRemove(event, courseID)}
         />
       </div>
 
