@@ -93,7 +93,8 @@ const CoursesPage = () => {
         
         <EnrollmentList 
           enrolledCourses={enrolledCourses}
-          onRemove={(event) => handleRemove(event, courseID)}
+          onRemove = {(event, courseID) => handleRemove(event, courseID)}
+          
         />
       </div>
 
